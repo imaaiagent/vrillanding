@@ -1,12 +1,13 @@
-# VIRL 3D Landing
+# VIRL 3D Landing v2
 
-A rebuilt 3D landing page for VIRL using React + Vite + Three.js.
+VIRL onchain-social landing page built with React, Vite and Three.js.
 
 ## Run
 npm install
 npm run dev
 
-## Build
+## Production
 npm run build
+npm run preview
 
-Deploy the generated `dist` directory with any static host, or run Vite on Railway.
+For Railway, use build command `npm run build` and start command `npm run preview -- --host 0.0.0.0 --port $PORT`.
