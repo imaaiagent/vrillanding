@@ -19,3 +19,5 @@
 .socialAnchor{pointer-events:auto;cursor:pointer;}
 .socialOrbit.orbitHidden{opacity:0;visibility:hidden;}
 .socialOrbit{transition:opacity .45s ease,visibility .45s ease;}
+
+.marketPunch{margin-top:55px!important;font-size:clamp(24px,3vw,46px)!important;line-height:1.08!important;color:#eef6f2!important;letter-spacing:-.04em}.marketPunch i{font-style:normal;color:var(--green)}

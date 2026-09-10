@@ -1,21 +1,18 @@
-# VIRL 3D Landing — V7.2
+# VIRL 3D Landing — V7.4
 
-Coming-soon landing page for VIRL.
+Coming-soon landing page for VIRL, an onchain social platform turning internet attention into onchain value.
 
-## Updates
-- Fixed social orbit overlay so it does not scroll with the page.
-- Orbit fades away after leaving the hero section while the Three.js scene remains fixed.
-- Corrected the Robinhood feather mark.
-- X social card links to https://x.com/virlfamily.
-- Keeps the working V7.1 Three.js foundation.
+Copy direction follows the product concept: paste a public social link, resolve the identity, preview the opportunity, launch an onchain asset, and let activity create value for creators and communities.
 
 ## Run
+
 ```bash
 npm install
 npm run dev
 ```
 
 ## Production
+
 ```bash
 npm run build
 npm run preview
