@@ -25,6 +25,7 @@ function makeCardTexture(){
 
 function VirlScene(){
  const mount=useRef(null);
+ const orbitRef=useRef(null);
  useEffect(()=>{
   const el=mount.current, w=()=>window.innerWidth, h=()=>window.innerHeight;
   const scene=new THREE.Scene();
@@ -52,12 +53,50 @@ function VirlScene(){
 
   let mx=0,my=0;const move=e=>{mx=e.clientX/w()-.5;my=e.clientY/h()-.5};addEventListener('pointermove',move);
   const clock=new THREE.Clock();let raf;
-  function tick(){const t=clock.getElapsedTime();root.rotation.y+=(mx*.24-root.rotation.y)*.035;root.rotation.x+=(-my*.14-root.rotation.x)*.035;root.position.y+=Math.sin(t*.7)*.001;
-    root.children.forEach(o=>{if(o.geometry?.type==='TorusGeometry')o.rotation.z+=o.userData.speed*.002});
-    const arr=pg.attributes.position.array;for(let i=0;i<n;i++){const k=i*3,q=(phase[i]+t*.055)%1,e=q*q*(3-2*q),a=phase[i]*6.283+t*.06*(i%3?1:-1),rad=3.2+((i*17)%100)/100*3.1,sx=Math.cos(a)*rad,sy=Math.sin(i*12.71)*2.6,sz=Math.sin(a)*rad*.55;arr[k]=sx*(1-e)+target[k]*e;arr[k+1]=sy*(1-e)+target[k+1]*e;arr[k+2]=sz*(1-e)+target[k+2]*e}pg.attributes.position.needsUpdate=true;
-    particles.rotation.y=t*.025;renderer.render(scene,camera);raf=requestAnimationFrame(tick)}tick();
+  function tick(){const t=clock.getElapsedTime();
+    // Slow cinematic rotation of the central 3D VIRL emblem.
+    root.rotation.y+=(mx*.24+Math.sin(t*.22)*.075-root.rotation.y)*.028;
+    root.rotation.x+=(-my*.14+Math.cos(t*.19)*.035-root.rotation.x)*.028;
+    root.position.y=Math.sin(t*.7)*.035;
+    root.children.forEach(o=>{if(o.geometry?.type==='TorusGeometry'){o.rotation.z+=o.userData.speed*.010;o.rotation.x+=o.userData.speed*.0025}});
+    const arr=pg.attributes.position.array;
+    for(let i=0;i<n;i++){const k=i*3,q=(phase[i]+t*.055)%1,e=q*q*(3-2*q),a=phase[i]*6.283+t*.06*(i%3?1:-1),rad=3.2+((i*17)%100)/100*3.1,sx=Math.cos(a)*rad,sy=Math.sin(i*12.71+t*.08)*2.6,sz=Math.sin(a)*rad*.55;arr[k]=sx*(1-e)+target[k]*e;arr[k+1]=sy*(1-e)+target[k+1]*e;arr[k+2]=sz*(1-e)+target[k+2]*e}
+    pg.attributes.position.needsUpdate=true;
+    particles.rotation.y=t*.055;
+    renderer.render(scene,camera);raf=requestAnimationFrame(tick)}tick();
+
+  // HTML social cards orbit the real 3D scene so the logos stay crisp.
+  const orbitEl=orbitRef.current;
+  const nodes=[...orbitEl.querySelectorAll('.socialNode')];
+  const baseAngles=[-Math.PI/2,-.42, .78, 2.32, 3.55];
+  const orbitClock=new THREE.Clock();
+  let orbitRaf;
+  function animateSocials(){
+    const t=orbitClock.getElapsedTime();
+    const vw=window.innerWidth, vh=window.innerHeight;
+    const cx=vw*.585, cy=vh*.505;
+    const rx=Math.min(vw*.305, 455), ry=Math.min(vh*.315, 290);
+    const speed=.105;
+    nodes.forEach((node,i)=>{
+      const a=baseAngles[i]+t*speed;
+      const x=Math.cos(a)*rx;
+      const y=Math.sin(a)*ry;
+      const depth=Math.sin(a);
+      const z=depth*170;
+      const scale=.86+(depth+.35)*.14;
+      const opacity=.64+(depth+.5)*.36;
+      node.style.left=`${cx}px`;node.style.top=`${cy}px`;
+      node.style.transform=`translate3d(calc(-50% + ${x}px), calc(-50% + ${y}px), ${z}px) scale(${scale})`;
+      node.style.opacity=String(Math.max(.5,Math.min(1,opacity)));
+      node.style.zIndex=String(30+Math.round(depth*20));
+      node.style.setProperty('--bob', `${Math.sin(t*1.25+i*1.7)*7}px`);
+      node.style.setProperty('--tilt', `${Math.sin(t*.65+i)*4}deg`);
+    });
+    orbitRaf=requestAnimationFrame(animateSocials);
+  }
+  animateSocials();
   const resize=()=>{camera.aspect=w()/h();camera.updateProjectionMatrix();renderer.setSize(w(),h())};addEventListener('resize',resize);
-  return()=>{cancelAnimationFrame(raf);removeEventListener('pointermove',move);removeEventListener('resize',resize);renderer.dispose();el.removeChild(renderer.domElement)};
+  return()=>{cancelAnimationFrame(raf);cancelAnimationFrame(orbitRaf);removeEventListener('pointermove',move);removeEventListener('resize',resize);renderer.dispose();el.removeChild(renderer.domElement)};
  },[]);
  return <div ref={mount} className="scene"/>;
 }
