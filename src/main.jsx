@@ -57,20 +57,30 @@ function VirlScene(){
   const pm=new THREE.PointsMaterial({color:0xcaffed,size:.018,transparent:true,opacity:.72,depthWrite:false});
   const particles=new THREE.Points(pg,pm); scene.add(particles);
 
-  // Social identities replace the old market cubes.
+  // Social identities orbit VIRL — actual floating logo marks, no empty cubes.
   const socials=new THREE.Group(); scene.add(socials);
   const socialKeys=['github','x','tiktok','instagram','robinhood'];
   const socialLabels=['GITHUB','X','TIKTOK','INSTAGRAM','ROBINHOOD'];
   const socialMats=[];
-  socialKeys.forEach((key)=>{const t=svgTexture(key);t.colorSpace=THREE.SRGBColorSpace;socialMats.push(t)});
+  socialKeys.forEach((key)=>{
+   const svg=ICONS[key];
+   const img=new Image();
+   const tex=new THREE.Texture();
+   img.onload=()=>{tex.image=img;tex.needsUpdate=true};
+   img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+   tex.colorSpace=THREE.SRGBColorSpace;
+   socialMats.push(tex);
+  });
   socialKeys.forEach((key,i)=>{
    const g=new THREE.Group();
-   const shell=new THREE.Mesh(new THREE.BoxGeometry(.72,.72,.12),new THREE.MeshPhysicalMaterial({color:0x0a1512,metalness:.8,roughness:.18,clearcoat:1,transparent:true,opacity:.92,emissive:0x08251c,emissiveIntensity:.7}));
-   g.add(shell);
-   const edge=new THREE.LineSegments(new THREE.EdgesGeometry(shell.geometry),new THREE.LineBasicMaterial({color:0x6dffd0,transparent:true,opacity:.55})); g.add(edge);
-   const icon=new THREE.Mesh(new THREE.PlaneGeometry(.39,.39),new THREE.MeshBasicMaterial({map:socialMats[i],transparent:true,side:THREE.DoubleSide})); icon.position.z=.071; g.add(icon);
-   const a=i/socialKeys.length*Math.PI*2+.35, r=3.0+(i%2)*.25;
-   g.position.set(Math.cos(a)*r,Math.sin(a)*r*.55,(i-2)*.42); g.userData={a,r,speed:.12+Math.random()*.1,phase:Math.random()*6,label:socialLabels[i]};
+   // Soft glow behind each identity.
+   const halo=new THREE.Sprite(new THREE.SpriteMaterial({color:0x5fffc7,transparent:true,opacity:.13,depthWrite:false,blending:THREE.AdditiveBlending}));
+   halo.scale.set(.98,.98,1); g.add(halo);
+   const icon=new THREE.Sprite(new THREE.SpriteMaterial({map:socialMats[i],transparent:true,opacity:1,depthWrite:false}));
+   icon.scale.set(.72,.72,1); g.add(icon);
+   const a=i/socialKeys.length*Math.PI*2+.35, r=2.85+(i%2)*.28;
+   g.position.set(Math.cos(a)*r,Math.sin(a)*r*.55,(i-2)*.42);
+   g.userData={a,r,speed:.12+Math.random()*.1,phase:Math.random()*6,label:socialLabels[i]};
    socials.add(g);
   });
 
