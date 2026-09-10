@@ -48,25 +48,14 @@ function VirlScene(){
   const pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.BufferAttribute(pos,3));
   const particles=new THREE.Points(pg,new THREE.PointsMaterial({color:0xcaffed,size:.018,transparent:true,opacity:.72,depthWrite:false}));scene.add(particles);
 
-  const socialsGroup=new THREE.Group();scene.add(socialsGroup);
-  const cardTex=makeCardTexture();
-  const loader=new THREE.TextureLoader();
-  socials.forEach((s,i)=>{
-    const g=new THREE.Group();
-    const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:cardTex,color:0x55ffba,transparent:true,opacity:.18,depthWrite:false,blending:THREE.AdditiveBlending}));halo.scale.set(.98,.98,1);g.add(halo);
-    const card=new THREE.Sprite(new THREE.SpriteMaterial({map:cardTex,transparent:true,opacity:.96,depthWrite:false}));card.scale.set(.88,.88,1);g.add(card);
-    const icon=new THREE.Sprite(new THREE.SpriteMaterial({transparent:true,opacity:1,depthWrite:false}));icon.scale.set(.47,.47,1);g.add(icon);
-    loader.load(`/icons/${s.key}.svg`,loaded=>{loaded.colorSpace=THREE.SRGBColorSpace;icon.material.map=loaded;icon.material.needsUpdate=true;});
-    const a=i/socials.length*Math.PI*2+.35,r=2.95+(i%2)*.18;
-    g.position.set(Math.cos(a)*r,Math.sin(a)*r*.55,(i-2)*.38);g.userData={a,r,speed:.12+(i*.012),phase:i*.9};socialsGroup.add(g);
-  });
+
 
   let mx=0,my=0;const move=e=>{mx=e.clientX/w()-.5;my=e.clientY/h()-.5};addEventListener('pointermove',move);
   const clock=new THREE.Clock();let raf;
   function tick(){const t=clock.getElapsedTime();root.rotation.y+=(mx*.24-root.rotation.y)*.035;root.rotation.x+=(-my*.14-root.rotation.x)*.035;root.position.y+=Math.sin(t*.7)*.001;
     root.children.forEach(o=>{if(o.geometry?.type==='TorusGeometry')o.rotation.z+=o.userData.speed*.002});
     const arr=pg.attributes.position.array;for(let i=0;i<n;i++){const k=i*3,q=(phase[i]+t*.055)%1,e=q*q*(3-2*q),a=phase[i]*6.283+t*.06*(i%3?1:-1),rad=3.2+((i*17)%100)/100*3.1,sx=Math.cos(a)*rad,sy=Math.sin(i*12.71)*2.6,sz=Math.sin(a)*rad*.55;arr[k]=sx*(1-e)+target[k]*e;arr[k+1]=sy*(1-e)+target[k+1]*e;arr[k+2]=sz*(1-e)+target[k+2]*e}pg.attributes.position.needsUpdate=true;
-    socialsGroup.rotation.y=mx*.12;socialsGroup.rotation.x=-my*.08;socialsGroup.children.forEach(g=>{const d=g.userData,a=d.a+t*d.speed;g.position.x=Math.cos(a)*d.r;g.position.y=Math.sin(a)*d.r*.55;g.position.z=Math.sin(t*.7+d.phase)*.55;g.rotation.z=Math.sin(t*.55+d.phase)*.04});particles.rotation.y=t*.025;renderer.render(scene,camera);raf=requestAnimationFrame(tick)}tick();
+    particles.rotation.y=t*.025;renderer.render(scene,camera);raf=requestAnimationFrame(tick)}tick();
   const resize=()=>{camera.aspect=w()/h();camera.updateProjectionMatrix();renderer.setSize(w(),h())};addEventListener('resize',resize);
   return()=>{cancelAnimationFrame(raf);removeEventListener('pointermove',move);removeEventListener('resize',resize);renderer.dispose();el.removeChild(renderer.domElement)};
  },[]);
@@ -74,7 +63,7 @@ function VirlScene(){
 }
 
 function App(){return <div className="site"><VirlScene/><div className="grain"/><nav><a className="brand" href="#top"><img src={logo}/><span>VIRL</span></a><div className="links"><a href="#idea">WHY VIRL</a><a href="#loop">HOW IT WORKS</a><a href="#market">THE MARKET</a></div><span className="navCta">COMING SOON</span></nav><main id="top">
-<section className="hero"><div className="heroCopy"><div className="eyebrow"><span/> VIRL / COMING SOON</div><h1>TURN ATTENTION<br/><i>INTO VALUE.</i></h1><div className="comingSoon">COMING SOON</div><p>VIRL turns viral creators, social identities, memes and internet moments into onchain assets — connecting attention with markets, communities and speculation.</p><div className="buttons"><a className="primary" href="#idea">Discover VIRL <b>↓</b></a><a className="secondary" href="#loop">See the mechanism ↗</a></div></div><div className="heroHint"><span>YOUR SOCIAL IDENTITY</span><span>CAN BECOME AN ASSET</span></div><div className="scroll">SCROLL <b>↓</b></div></section>
+<section className="hero"><div className="socialOrbit" aria-hidden="true">{socials.map((s,i)=><div className={`socialNode social-${s.key}`} key={s.key}><div className="socialCard"><div className="socialIcon"><img src={`/icons/${s.key}.svg`} alt="" /></div></div><div className="socialLabel"><b>{s.label}</b><span>{s.sub}</span></div></div>)}</div><div className="heroCopy"><div className="eyebrow"><span/> VIRL / COMING SOON</div><h1>TURN ATTENTION<br/><i>INTO VALUE.</i></h1><div className="comingSoon">COMING SOON</div><p>VIRL turns viral creators, social identities, memes and internet moments into onchain assets — connecting attention with markets, communities and speculation.</p><div className="buttons"><a className="primary" href="#idea">Discover VIRL <b>↓</b></a><a className="secondary" href="#loop">See the mechanism ↗</a></div></div><div className="heroHint"><span>YOUR SOCIAL IDENTITY</span><span>CAN BECOME AN ASSET</span></div><div className="scroll">SCROLL <b>↓</b></div></section>
 <section id="idea" className="statement"><div className="sectionNo">01 / THE IDEA</div><div><h2>The internet already<br/><span>creates attention.</span></h2><p>VIRL gives that attention a market. A viral moment becomes an identity, an identity becomes a token, and a token becomes a community-owned asset.</p></div></section>
 <section id="loop" className="loop"><div className="sectionNo">02 / THE VIRL LOOP</div><div className="steps"><article><span>01</span><div><h3>GO VIRAL</h3><p>A creator, meme, account, trend or personality captures the internet.</p></div></article><article><span>02</span><div><h3>RECOGNISE</h3><p>VIRL identifies the social identity and maps the attention around it.</p></div></article><article><span>03</span><div><h3>LAUNCH</h3><p>Turn the identity into an onchain asset that people can discover and trade.</p></div></article><article><span>04</span><div><h3>SPREAD</h3><p>Attention drives activity. Communities form. The market grows with the moment.</p></div></article></div></section>
 <section id="market" className="market"><div className="sectionNo">03 / ATTENTION → MARKET</div><div className="marketBig"><span>VIRAL</span><strong>→</strong><span>ONCHAIN</span><strong>→</strong><span>MARKET</span></div><p>VIRL is the missing layer between what the internet talks about and what the internet can own.</p></section>
