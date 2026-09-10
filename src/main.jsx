@@ -56,30 +56,40 @@ function VirlScene(){
   const heroObserver=heroEl?new IntersectionObserver(([entry])=>{if(orbitEl) orbitEl.classList.toggle('orbitHidden',!entry.isIntersecting)},{threshold:.08}):null;
   if(heroObserver) heroObserver.observe(heroEl);
   const nodes=orbitEl?[...orbitEl.querySelectorAll('.socialNode')]:[];
-  const angles=[-Math.PI/2,-Math.PI/2+Math.PI*2/5,-Math.PI/2+Math.PI*4/5,-Math.PI/2+Math.PI*6/5,-Math.PI/2+Math.PI*8/5];
+  // Deliberately map each social identity to the same visual positions as the art direction:
+  // X = top, TikTok = upper-right, Robinhood = lower-right, Instagram = lower-left, GitHub = upper-left.
+  const angles=[
+    Math.PI + Math.PI/5, // GitHub
+    -Math.PI/2,           // X
+    -Math.PI/10,          // TikTok
+    Math.PI/2 + Math.PI/5,// Instagram
+    Math.PI/2 - Math.PI/5 // Robinhood
+  ];
   const orbitState={phase:0};
   function layoutSocialOrbit(t){
     if(!nodes.length) return;
     const mobile=window.innerWidth<800;
-    const cx=window.innerWidth*(mobile?.64:.665);
-    const cy=window.innerHeight*(mobile?.50:.51);
-    const rx=Math.min(window.innerWidth*(mobile?.30:.235), mobile?230:390);
-    const ry=Math.min(window.innerHeight*(mobile?.27:.31), mobile?220:285);
-    const speed=.00016;
+    const cx=window.innerWidth*(mobile?.61:.615);
+    const cy=window.innerHeight*(mobile?.50:.50);
+    const rx=Math.min(window.innerWidth*(mobile?.31:.215), mobile?220:355);
+    const ry=Math.min(window.innerHeight*(mobile?.29:.30), mobile?205:270);
+    // Slow cinematic rotation: one full revolution roughly every 65 seconds.
+    const speed=.000097;
     orbitState.phase=t*speed;
     nodes.forEach((node,i)=>{
       const a=angles[i]+orbitState.phase;
       const x=Math.cos(a)*rx;
       const y=Math.sin(a)*ry;
+      // Depth is based on the orbit's vertical position. Front objects are larger/brighter.
       const depth=(Math.sin(a)+1)/2;
-      const scale=.78+depth*.30;
+      const scale=.82+depth*.25;
       const z=Math.round(depth*100);
-      const tilt=Math.sin(a)*7;
+      const tilt=Math.sin(a)*4.5;
       node.style.left=`${cx}px`;
       node.style.top=`${cy}px`;
       node.style.zIndex=String(20+z);
-      node.style.opacity=String(.48+depth*.52);
-      node.style.transform=`translate3d(${x}px,${y}px,${depth*70}px) translate(-50%,-50%) scale(${scale}) rotateZ(${tilt}deg)`;
+      node.style.opacity=String(.55+depth*.45);
+      node.style.transform=`translate3d(${x}px,${y}px,${depth*80}px) translate(-50%,-50%) scale(${scale}) rotateZ(${tilt}deg)`;
     });
   }
   const clock=new THREE.Clock();let raf;
