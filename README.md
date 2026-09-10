@@ -1,13 +1,25 @@
-# VIRL 3D Landing v2
+# VIRL 3D Landing — V3
 
-VIRL onchain-social landing page built with React, Vite and Three.js.
+Coming-soon landing page for VIRL, an onchain social platform turning internet attention into onchain value.
+
+## Stack
+- Vite
+- React
+- Three.js
 
 ## Run
+```bash
 npm install
 npm run dev
+```
 
 ## Production
+```bash
 npm run build
-npm run preview
+npm run preview -- --host 0.0.0.0 --port $PORT
+```
 
-For Railway, use build command `npm run build` and start command `npm run preview -- --host 0.0.0.0 --port $PORT`.
+## V3 changes
+- Strong **COMING SOON** treatment in hero, navigation and final CTA.
+- Replaced the floating market cubes with 3D social identity cards for **GitHub, X, TikTok, Instagram and Robinhood**.
+- Social cards orbit the VIRL mark as a visual representation of internet identity flowing into an onchain market.
